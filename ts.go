@@ -9,8 +9,6 @@ import (
   "time"
 )
 
-
-
 // given a string and a time layout, search for a timestamp in the
 // line and return true if it's greather than the initial time
 func between(line string, layout string, re regexp.Regexp, initial time.Time) bool {
@@ -34,14 +32,20 @@ func main() {
     minutesPtr := flag.Int("m", 0, "minutes")
     hoursPtr := flag.Int("h", 0, "hours")
     daysPtr := flag.Int("d", 0, "days")
+
     flag.Parse()
+    if flag.NArg() != 1 || flag.NFlag() < 1 {
+        flag.Usage()
+        os.Exit(1)
+    }
+    filename := flag.Arg(0)
 
     initial := time.Now().
         AddDate(0, 0, -*daysPtr).
         Add(-time.Duration(*hoursPtr)*time.Hour).
         Add(-time.Duration(*minutesPtr)*time.Minute)
 
-    f, err := os.Open("prova.log")
+    f, err := os.Open(filename)
     if err != nil {
         panic(err)
     }

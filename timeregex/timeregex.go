@@ -5,8 +5,11 @@ import (
 )
 
 
-// GO CODE STARTS - 
-
+// This section of code, (constants, isDigit, nextStdChunk, startsWithLowerCase)
+// are extracted from https://github.com/golang/go/blob/master/src/time/format.go
+// Copyright 2010 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 const (
     _                        = iota
     stdLongMonth             = iota + stdNeedDate  // "January"
@@ -198,8 +201,7 @@ func isDigit(s string, i int) bool {
     return '0' <= c && c <= '9'
 }
 
-
-// END OF GO CODE
+// End of Go Authors code (Copyright 2010 The Go Authors).
 
 
 func GenerateRegex(layout string) string {

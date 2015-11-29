@@ -7,55 +7,56 @@ import (
   "os"
   "regexp"
   "time"
+  "github.com/servomac/ts/timeregex"
 )
 
-// given a string and a time layout, search for a timestamp in the
-// line and return true if it's greather than the initial time
-func between(line string, layout string, re regexp.Regexp, initial time.Time) bool {
-    timestamp := re.FindString(line)
-    if len(timestamp) > 0 {
-        t, err := time.Parse(layout, timestamp)
-        if err != nil {
-            panic(err)
-        }
-
-        return initial.Before(t) || initial == t
-    }
-
-    return false
-}
-
 func main() {
-    re := regexp.MustCompile(`\d{2}/\w{3}/\d{4}:\d{2}:\d{2}:\d{2} (\+|-)\d{4}`)
-    layout := "02/Jan/2006:15:04:05 -0700"
-
+    layoutPtr := flag.String("l", "", "timestamp layout")
     minutesPtr := flag.Int("m", 0, "minutes")
     hoursPtr := flag.Int("h", 0, "hours")
     daysPtr := flag.Int("d", 0, "days")
 
     flag.Parse()
-    if flag.NArg() != 1 || flag.NFlag() < 1 {
+    if flag.NArg() != 1 || flag.NFlag() < 2 || len(*layoutPtr) == 0 {
         flag.Usage()
         os.Exit(1)
     }
+
+    layout := *layoutPtr
+    re_str := timeregex.GenerateRegex(layout)
+    rePtr := regexp.MustCompile(re_str)
+    re := *rePtr
+
+    initial_formated := time.Now().AddDate(0, 0, -*daysPtr).
+            Add(-time.Duration(*hoursPtr)*time.Hour).
+            Add(-time.Duration(*minutesPtr)*time.Minute)//.
+            //Format(layout)
+    //initial := time.Parse(layout, initial_formated)
+    fmt.Println("Filter starts at ", initial)
+
     filename := flag.Arg(0)
-
-    initial := time.Now().
-        AddDate(0, 0, -*daysPtr).
-        Add(-time.Duration(*hoursPtr)*time.Hour).
-        Add(-time.Duration(*minutesPtr)*time.Minute)
-
     f, err := os.Open(filename)
     if err != nil {
         panic(err)
     }
+    defer f.Close()
 
     scanner := bufio.NewScanner(f)
 
     for scanner.Scan() {
         line := scanner.Text()
-        if between(line, layout, *re, initial) {
-            fmt.Println(line)
+        timestamp := re.FindString(line)
+        if len(timestamp) > 0 {
+
+            t, err := time.Parse(layout, timestamp)
+            if err != nil {
+                panic(err)
+            }
+
+            if t.After(initial) || t.Equal(initial) {
+                fmt.Println("MATCH ", line)
+            }
         }
     }
+
 }

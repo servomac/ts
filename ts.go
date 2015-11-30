@@ -27,12 +27,15 @@ func main() {
     rePtr := regexp.MustCompile(re_str)
     re := *rePtr
 
-    initial_formated := time.Now().AddDate(0, 0, -*daysPtr).
-            Add(-time.Duration(*hoursPtr)*time.Hour).
-            Add(-time.Duration(*minutesPtr)*time.Minute)//.
-            //Format(layout)
-    //initial := time.Parse(layout, initial_formated)
-    fmt.Println("Filter starts at ", initial)
+    starting_time := time.Now().AddDate(0, 0, -*daysPtr).
+        Add(-time.Duration(*hoursPtr)*time.Hour).
+        Add(-time.Duration(*minutesPtr)*time.Minute)
+    // format and parse again the desired starting log time,
+    // to easily compare with formatted timestamps
+    starting_time, err := time.Parse(layout, starting_time.Format(layout))
+    if err != nil {
+        panic(err)
+    }
 
     filename := flag.Arg(0)
     f, err := os.Open(filename)
@@ -47,13 +50,12 @@ func main() {
         line := scanner.Text()
         timestamp := re.FindString(line)
         if len(timestamp) > 0 {
-
             t, err := time.Parse(layout, timestamp)
             if err != nil {
                 panic(err)
             }
 
-            if t.After(initial) || t.Equal(initial) {
+            if t.After(starting_time) || t.Equal(starting_time) {
                 fmt.Println("MATCH ", line)
             }
         }

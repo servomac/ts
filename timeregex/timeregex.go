@@ -5,8 +5,10 @@ import (
 )
 
 
-// This section of code, (constants, isDigit, nextStdChunk, startsWithLowerCase)
-// are extracted from https://github.com/golang/go/blob/master/src/time/format.go
+// This section of code (constants, std0x var, funcs isDigit, nextStdChunk,
+// startsWithLowerCase) is extracted from oficial Golang time package
+// https://github.com/golang/go/blob/master/src/time/format.go
+
 // Copyright 2010 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.

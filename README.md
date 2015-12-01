@@ -9,7 +9,8 @@ Filter logs lines by specifying a timedelta. Using the reference time layout of 
 
 ## TODO
 
- [ ] Implement an "expand" option, to substitute every whitespace with an arbitrary number of whitespaces (\s+).
- [ ] go test timeregex
- [ ] go doc
+ - [ ] Complete layout regexp
+ - [ ] Implement an "expand" option, to substitute every whitespace with an arbitrary number of whitespaces (\s+)
+ - [ ] go test timeregex
+ - [ ] go doc
 

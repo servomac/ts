@@ -17,15 +17,15 @@ func main() {
     daysPtr := flag.Int("d", 0, "days")
 
     flag.Parse()
-    if flag.NArg() != 1 || flag.NFlag() < 2 || len(*layoutPtr) == 0 {
+    if flag.NFlag() > 3 || len(*layoutPtr) == 0 {
         flag.Usage()
         os.Exit(1)
     }
 
     layout := *layoutPtr
-    re_str := timeregex.GenerateRegex(layout)
-    rePtr := regexp.MustCompile(re_str)
-    re := *rePtr
+    reStr := timeregex.GenerateRegex(layout)
+    fmt.Println(layout, " -> ", reStr)
+    re := *regexp.MustCompile(reStr)
 
     starting_time := time.Now().AddDate(0, 0, -*daysPtr).
         Add(-time.Duration(*hoursPtr)*time.Hour).
@@ -36,15 +36,21 @@ func main() {
     if err != nil {
         panic(err)
     }
+    fmt.Println("Filter from: ", starting_time)
 
-    filename := flag.Arg(0)
-    f, err := os.Open(filename)
-    if err != nil {
-        panic(err)
+    var scanner *bufio.Scanner;
+    if flag.NArg() == 1 {
+        filename := flag.Arg(0)
+        f, err := os.Open(filename)
+        if err != nil {
+            panic(err)
+        }
+        defer f.Close()
+
+        scanner = bufio.NewScanner(f)
+    } else if flag.NArg() == 0 {
+        scanner = bufio.NewScanner(os.Stdin)
     }
-    defer f.Close()
-
-    scanner := bufio.NewScanner(f)
 
     for scanner.Scan() {
         line := scanner.Text()
@@ -56,7 +62,7 @@ func main() {
             }
 
             if t.After(starting_time) || t.Equal(starting_time) {
-                fmt.Println("MATCH ", line)
+                fmt.Println(line)
             }
         }
     }

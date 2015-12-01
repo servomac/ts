@@ -5,5 +5,11 @@ Filter logs lines by specifying a timedelta. Using the reference time layout of 
 
 ## Examples
 
-* Last hour and 5 minutes of syslog: `ts -l "Jan 02 15:04:05" -h 1 -m 5 /var/log/syslog`
+* Last hour and 5 minutes of syslog: `ts -l "Jan  2 15:04:05" -h 1 -m 5 /var/log/syslog`
+
+## TODO
+
+ [ ] Implement an "expand" option, to substitute every whitespace with an arbitrary number of whitespaces (\s+).
+ [ ] go test timeregex
+ [ ] go doc
 
